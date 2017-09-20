@@ -1,126 +1,81 @@
+/*
+    Code By - Abhishek Kumar
+    College - NIT Durgapur
+    Date -
+    Logic -
+    Category - 
+    Platform
+*/      
+
 #include <bits/stdc++.h>
 using namespace std;
+ 
+//data types
+#define ll long long int
+#define ull unsigned long long int
+#define l long int
+#define ul unsigned long int
+ 
+//stl
+typedef vector<ll> vi;
+typedef vector<vi> vvi;
+typedef pair<ll,ll> pii;
+typedef map<ll,ll> mpll;
+#define sz(a) (a).size()
+#define pb push_back
+#define all(c) (c).begin(),(c).end()
+#define tr(c,i) for(typeof((c).begin()) i = (c).begin(); i != (c).end(); i++)
+#define present(c,x) ((c).find(x) != (c).end())
+#define cpresent(c,x) (find(all(c),x) != (c).end())
+ 
+//loops
+#define loop(i,a,b) for(ll i=a;i<=b;i++)
+#define loopr(i,a,b) for(ll i=a;i>=b;i--)
+ 
+//others
+#define isPowerOfTwo(S) !(S & (S - 1))
+#define nearestPowerOfTwo(S) ((int)pow(2.0, (int)((log((double)S) / log(2.0)) + 0.5)))
+#define nline cout<<endl
+ 
+int main()
+{
+    std::ios::sync_with_stdio(false);
+    ll n;
+    cin>>n;
+    set<ll> set1, set2;
+    vector<pii> vp;
 
-#define LL long long
-#define myLoop(x) for(int i=0;i<x;i++)
-#define rangeLoop(x,y) for(int i=x;i<y;i++)
-#define myNestedLoop(x) for(int j=0;j<x;j++)
-#define MOD 1000000009
-#define speedUp ios::sync_with_stdio(false)
-#define MAXLOG 14
-#define MAX 1001
-
-
-int root = 0;
-vector<int> myGraph[MAX];
-int N,M;
-int parent[MAX];
-int depth[MAX];
-int sparse[MAXLOG][1001];
-
-// int LCA(int u, int v) {
-//  if(depth[u] < depth[v]) swap(u,v);
-//  int diff = depth[u] - depth[v];
-//  for(int i=0; i<LN; i++) if( (diff>>i)&1 ) u = pa[i][u];
-//  if(u == v) return u;
-//  for(int i=LN-1; i>=0; i--) if(pa[i][u] != pa[i][v]) {
-//      u = pa[i][u];
-//      v = pa[i][v];
-//  }
-//  return pa[0][u];
-// }
-
-int lca(int u, int v){
-    if(depth[u] < depth[v])
-        swap(u,v);
-
-    int diff = depth[u] - depth[v];
-    myLoop(MAXLOG){
-        cout<<"U is : "<<u<<endl;
-        if( (diff>>i)&1)
-            u = sparse[i][u];
-    }
-
-    if(u==v)
-        return u;
-
-    for(int i=MAXLOG-1;i>=0;i--){
-        
-        if(sparse[i][u] != sparse[i][v]){
-            u = sparse[i][u];
-            v = sparse[i][v];
-        }
-        cout<<"U is : "<<u<<" and V is "<<v<<endl;  
-    }
-
-    return sparse[0][u];
-}
-
-void getParent(int current, int par, int dep){
-    parent[current] = par;
-    sparse[0][current] = par;
-    depth[current] = dep;
-
-    myLoop(myGraph[current].size()){
-        if(myGraph[current][i] != par){
-            getParent(myGraph[current][i], current, dep+1);
-        }
-    }
-}
-
-int main(int argc, char const *argv[]){
-    int left, right;
-
-    if (argc == 1){
-        cout<<"Exiting. Provide File name"<<endl;
-        exit(0);
-    }
-
-    int h;
-    string line;
-    ifstream myFile(argv[1]);
-    if (myFile.is_open())
+    loop(i,1,n-1)
     {
-        myFile >> N;
-        myFile >> M;
-        for(int i=0;i<M;i++){
-            myFile >> left;
-            myFile >> right;
-            myGraph[left-1].push_back(right-1);
-            
-        }
+        ll a,b;
+        cin>>a>>b;
+        vp.push_back(make_pair(min(a,b), max(a,b)));
     }
 
-    myLoop(MAXLOG){
-        myNestedLoop(N){
-            sparse[i][j] = -1;
-        }
+    if(n==1)
+    {
+        cout<<"0"<<endl;
+        return 0;
     }
 
-    // Creating the Sparse Table
-    // Getting Parents
-    getParent(root, -1, 1);
+    sort(vp.begin(), vp.end());
+    set1.insert(vp[0].first);
+    set2.insert(vp[0].second);
 
-    // Sparse Table Formation for LCA
-    for(int i=1;i<MAXLOG;i++){
-        for(int j=0;j<N;j++){
-            if(sparse[i-1][j] != -1)
-                sparse[i][j] = sparse[i-1][sparse[i-1][j]];
-        }
+    loop(i,1,vp.size()-1)
+    {
+        ll a = vp[i].first;
+        ll b = vp[i].second;
+        if(set1.find(a) != set1.end())
+            set2.insert(b);
+        else
+            set1.insert(b);
     }
 
-    myLoop(MAXLOG){
-        myNestedLoop(N){
-            cout<<sparse[i][j]<<" ";
-        }
-        cout<<endl;
-    }
 
-    int Q;
-    cin>>Q;
-    while(Q--){
-        cin>>left>>right;
-        cout<<"The LCA of "<<left<<" and "<<right<<" is: "<<lca(left-1, right-1)+1<<endl;
-    }
-
+    //cout<<set1.size()<<" "<<set2.size()<<endl;
+    ll ans = (set1.size()) * (set2.size());
+    //cout<<ans<<endl;
+    cout<<ans-n+1<<endl;
+    return 0;
 }

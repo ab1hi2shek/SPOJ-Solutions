@@ -36,6 +36,27 @@ typedef map<ll,ll> mpll;
 #define isPowerOfTwo(S) !(S & (S - 1))
 #define nearestPowerOfTwo(S) ((int)pow(2.0, (int)((log((double)S) / log(2.0)) + 0.5)))
 #define nline cout<<endl
+#define MAXM 105
+
+ll dp[MAXM][MAXM][2];
+
+ll solution(ll n, ll k, ll prevBit)
+{
+	if(k < 0)
+		return 0;
+	if(k==0 && n<=0)
+		return 1;
+	if(k>0 && n<=0)
+		return 0;
+	if(dp[n][k][prevBit] != -1)
+		return dp[n][k][prevBit];
+
+	ll x = solution(n-1, k - 1*prevBit, 1);
+	ll y = solution(n-1, k, 0);
+
+	return dp[n][k][prevBit] = x + y;
+}
+
  
 int main()
 {
@@ -45,6 +66,13 @@ int main()
 
 	while(t--)
 	{
-		
+		memset(dp,-1,sizeof(dp));
+		ll indx,n,k;
+		cin>>indx>>n>>k;
+
+		if(k>=n)
+			cout<<indx<<" 0"<<endl;
+		else
+			cout<<indx<<" "<<solution(n,k,0)<<endl;
 	}
 }
