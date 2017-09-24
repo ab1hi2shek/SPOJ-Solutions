@@ -1,81 +1,84 @@
-/*
-    Code By - Abhishek Kumar
-    College - NIT Durgapur
-    Date -
-    Logic -
-    Category - 
-    Platform
-*/      
-
 #include <bits/stdc++.h>
 using namespace std;
- 
-//data types
-#define ll long long int
-#define ull unsigned long long int
-#define l long int
-#define ul unsigned long int
- 
-//stl
-typedef vector<ll> vi;
-typedef vector<vi> vvi;
-typedef pair<ll,ll> pii;
-typedef map<ll,ll> mpll;
-#define sz(a) (a).size()
-#define pb push_back
-#define all(c) (c).begin(),(c).end()
-#define tr(c,i) for(typeof((c).begin()) i = (c).begin(); i != (c).end(); i++)
-#define present(c,x) ((c).find(x) != (c).end())
-#define cpresent(c,x) (find(all(c),x) != (c).end())
- 
-//loops
-#define loop(i,a,b) for(ll i=a;i<=b;i++)
-#define loopr(i,a,b) for(ll i=a;i>=b;i--)
- 
-//others
-#define isPowerOfTwo(S) !(S & (S - 1))
-#define nearestPowerOfTwo(S) ((int)pow(2.0, (int)((log((double)S) / log(2.0)) + 0.5)))
-#define nline cout<<endl
- 
-int main()
-{
-    std::ios::sync_with_stdio(false);
-    ll n;
-    cin>>n;
-    set<ll> set1, set2;
-    vector<pii> vp;
 
-    loop(i,1,n-1)
-    {
-        ll a,b;
-        cin>>a>>b;
-        vp.push_back(make_pair(min(a,b), max(a,b)));
+int indeg[26], outdeg[26], color[26];
+bool found[26], g[26][26];
+char word[1001];
+
+bool isConnected() {
+  int i, j;
+  queue< int > Q;
+  for(i=0; i<26; i++) color[i] = (found[i]? 0 : 2);
+  for(i=0; color[i]; i++); color[i] = 1;
+
+    cout<<" printing found[i]\n";
+    for(int d=0;d<26;d++)
+      cout<<found[d]<<" ";
+    cout<<endl;
+
+    cout<<" printing color[i]\n";
+    for(int d=0;d<26;d++)
+      cout<<color[d]<<" ";
+    cout<<endl;
+
+  cout<< "curr i = "<<i<<endl; 
+  Q.push(i);
+  while(!Q.empty()) {
+    i = Q.front(); Q.pop();
+    cout<<" Q front = "<<i<<endl;
+    cout<<" childrens = ";
+    for(j=0; j<26; j++) {
+      if((g[i][j] || g[j][i]) && !color[j]) {
+        cout<<j<<" ";
+        Q.push(j);  
+        color[j] = 1;
+      }
     }
+    cout<<endl;
+    color[i] = 2;
+  }
 
-    if(n==1)
-    {
-        cout<<"0"<<endl;
-        return 0;
+  cout<<" printing color[i]\n";
+    for(int d=0;d<26;d++)
+      cout<<color[d]<<" ";
+    cout<<endl;
+  
+  for(i=0; i<26; i++)
+    if(color[i]!=2)
+      return false;
+  return true;
+}
+
+bool hasEularPath() {
+  if(!isConnected()) return false;
+  int i, cnt1, cnt2;
+  for(i=cnt1=cnt2=0; i<26; i++) {
+    if(outdeg[i]-indeg[i]==1) cnt1++;
+    else if(indeg[i]-outdeg[i]==1) cnt2++;
+    else if(indeg[i]!=outdeg[i]) return false;
+  }
+  if(cnt1+cnt2==0 || (cnt1==1 && cnt2==1)) return true;
+  return false;
+}
+
+int main() {
+  int t, n, u, v, len;
+  scanf("%d", &t);
+  while(t--) {
+    memset(indeg, 0, sizeof indeg);
+    memset(outdeg, 0, sizeof outdeg);
+    memset(g, 0, sizeof g);
+    memset(found, 0, sizeof found);
+    scanf("%d", &n);
+    while(n--) {
+      scanf("%s", word);
+      len = strlen(word);
+      outdeg[u = word[0]-'a']++;
+      indeg[v = word[len-1]-'a']++;
+      g[u][v] = found[u] = found[v] = 1;
     }
-
-    sort(vp.begin(), vp.end());
-    set1.insert(vp[0].first);
-    set2.insert(vp[0].second);
-
-    loop(i,1,vp.size()-1)
-    {
-        ll a = vp[i].first;
-        ll b = vp[i].second;
-        if(set1.find(a) != set1.end())
-            set2.insert(b);
-        else
-            set1.insert(b);
-    }
-
-
-    //cout<<set1.size()<<" "<<set2.size()<<endl;
-    ll ans = (set1.size()) * (set2.size());
-    //cout<<ans<<endl;
-    cout<<ans-n+1<<endl;
-    return 0;
+    if(hasEularPath()) printf("Ordering is possible.n");
+    else printf("The door cannot be opened.n");
+  }
+  return 0;
 }
